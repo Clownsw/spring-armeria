@@ -17,19 +17,22 @@ import org.springframework.stereotype.Component;
  * @since 1.0
  */
 @Slf4j
+@SuppressWarnings("unused")
 @Component
 public class ErrorHandler implements ServerErrorHandler {
 
     @Override
     public @Nullable HttpResponse onServiceException(@Nullable ServiceRequestContext ctx, @Nullable Throwable cause) {
 
-        if (cause instanceof HttpStatusException) {
-            HttpStatusException e = (HttpStatusException) cause;
-            if (e.httpStatus().code() == 404) {
-                return HttpResponse.ofJson(HttpStatus.OK, MediaType.JSON_UTF_8, new Result<>(404, "not found!", null));
+        if (cause != null) {
+            if (cause instanceof HttpStatusException) {
+                HttpStatusException e = (HttpStatusException) cause;
+                if (e.httpStatus().code() == 404) {
+                    return HttpResponse.ofJson(HttpStatus.OK, MediaType.JSON_UTF_8, new Result<>(404, "not found!", null));
+                }
+            } else {
+                cause.printStackTrace();
             }
-        } else {
-            cause.printStackTrace();
         }
 
         return HttpResponse.ofJson(HttpStatus.OK, MediaType.JSON_UTF_8, new Result<>(500, "unknown error!", null));
